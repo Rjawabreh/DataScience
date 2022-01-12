@@ -1,0 +1,81 @@
+#Import pandas 
+$ import pandas as pd
+#Load the pandas dataframe object to view and manipulate iris dataset
+$ from pandas import DataFrame
+#Use sklearn to import iris data set
+$ from sklearn.datasets import load_iris
+#View the iris dataset to get a general picture of the data in terms of instances and attributes
+$ iris = DataFrame(load_iris().data)
+$ iris 
+#The iris dataset including the different species were acquired from DataHub
+$ iris_data = pd.read_csv("https://datahub.io/machine-learning/iris/r/1.csv")
+#To check if the acquired data is correct 
+$ iris_data.head()
+#To investigate if there are average differences between the different attributes of each species of iris, the dataframe is sliced into three different smaller data frames representing each species (setosa, versicolour, virginica)
+#The resultant variables were printed to make sure the data-slicing worked correctly
+$ setosa = iris_data[iris_data["class"] == "Iris-setosa"]
+$ print(setosa)
+$ versicolor = iris_data[iris_data["class"] == "Iris-versicolor"]
+$ print(versicolor)
+$ virginica = iris_data[iris_data["class"] == "Iris-virginica"]
+$ print(virginica)
+#Calculating the means of each attribute (sepal length/width and petal length/width) will add insigth into obvious differences between the average of individual attributes belonging to one of the three species
+#Standard deviation would also be an interesting parameter to investigate as it would show the divergence of each attribute from the mean, and hence the greneral diversity of data points
+#For illumination on what downstream statistical test would be most appropriate to use for this dataset, the median was also calculated
+#Rows containing values for the mean, standard deviation and median of each attribute were hence added as additional rows for each sliced dataframe representing the three different iris species
+$ setosa.loc['mean'] = [setosa["sepallength"].mean(), setosa["sepalwidth"].mean(), setosa["petallength"].mean(), setosa["petalwidth"].mean(), 'Iris-setosa']
+$ setosa.loc['SD'] = [setosa["sepallength"].std(), setosa["sepalwidth"].std(), setosa["petallength"].std(), setosa["petalwidth"].std(), 'Iris-setosa']
+$ setosa.loc['median'] = [setosa["sepallength"].median(), setosa["sepalwidth"].median(), setosa["petallength"].median(), setosa["petalwidth"].median(), 'Iris-setosa']
+#To check if the desired rows have been added succesfully 
+$ setosa
+$ versicolor.loc['mean'] = [versicolor["sepallength"].mean(), versicolor["sepalwidth"].mean(), versicolor["petallength"].mean(), versicolor["petalwidth"].mean(), 'Iris-versicolor']
+$ versicolor.loc['SD'] = [versicolor["sepallength"].std(), versicolor["sepalwidth"].std(), versicolor["petallength"].std(), versicolor["petalwidth"].std(), 'Iris-versicolor']
+$ versicolor.loc['median'] = [versicolor["sepallength"].median(), versicolor["sepalwidth"].median(), versicolor["petallength"].median(), versicolor["petalwidth"].median(), 'Iris-versicolor']
+$ versicolor
+$ virginica.loc['mean'] = [virginica["sepallength"].mean(), virginica["sepalwidth"].mean(), virginica["petallength"].mean(), virginica["petalwidth"].mean(), 'Iris-virginica']
+$ virginica.loc['SD'] = [virginica["sepallength"].std(), virginica["sepalwidth"].std(), virginica["petallength"].std(), virginica["petalwidth"].std(), 'Iris-virginica']
+$ virginica.loc['median'] = [virginica["sepallength"].median(), virginica["sepalwidth"].median(), virginica["petallength"].median(), virginica["petalwidth"].median(), 'Iris-virginica']
+$ virginica
+#Plots based on the full iris dataframe were generated to visualise the distribution of the data points of each attribute
+# seaborn must first be imported and the theme should be set
+$ import seaborn as sns
+$ sns.set_theme()
+#Plot data for sepal length
+$ sns.displot(data=iris_data, x="sepallength", hue="class", kind="kde")
+#Plot data for sepal width
+$ sns.displot(data=iris_data, x="sepalwidth", hue="class", kind="kde")
+#Plot data for petal length
+$ sns.displot(data=iris_data, x="petallength", hue="class", kind="kde")
+#Plot data for petal width 
+$ sns.displot(data=iris_data, x="petalwidth", hue="class", kind="kde")
+#To run an Alexander-Govern test on each attribute from the three classes, it must first be imported from SciPy
+$ from scipy.stats import alexandergovern
+#Running the test on sepal length
+$ alexandergovern(setosa["sepallength"], versicolor["sepallength"], virginica["sepallength"])
+#Running the test on sepal width 
+$ alexandergovern(setosa["sepalwidth"], versicolor["sepalwidth"], virginica["sepalwidth"])
+#Running the test on petal length
+$ alexandergovern(setosa["petallength"], versicolor["petallength"], virginica["petallength"])
+#Running the test on petal width 
+$ alexandergovern(setosa["petalwidth"], versicolor["petalwidth"], virginica["petalwidth"])
+#To display the downstream correlation plots in the window, the following command is used
+$ %matplotlib inline
+#The plotting module for a scatter matrix to plot heat-maps is then imported
+$ from pandas.plotting import scatter_matrix
+#The colour scheme for the output heat maps is set
+$ cmap = sns.diverging_palette(10, 220, as_cmap=True)
+#To look at the specific correlative relationship between the attributes in the entire dataset, the correlation is calculated 
+$ whole_iris_corr = iris_data.corr()
+#To display the table with the calculated correlations the following is called 
+$ whole_iris_corr
+#To plot the calculated correlations in a heat-map
+$ sns.heatmap(whole_iris_corr, vmin=-1.0, vmax=1.0, cmap=cmap)
+#The same is done for each species specific dataframe 
+$ setosa_corr = setosa.corr()
+$ setosa_corr
+$ sns.heatmap(setosa_corr, vmin=-1.0, vmax=1.0, cmap=cmap)
+$ versicolour_corr = versicolor.corr()
+$ versicolour_corr
+$ sns.heatmap(virginica_corr, vmin=-1.0, vmax=1.0, cmap=cmap)
+$ virginica_corr = virginica.corr()
+$ virginica_corr
